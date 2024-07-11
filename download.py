@@ -3,6 +3,17 @@ from pytube import YouTube, Playlist
 import os
 import subprocess
 from pathlib import Path
+import base64
+import ssl
+
+ssl._create_default_https_context = ssl._create_unverified_context
+# Fonction de génération de lien de téléchargement
+def generate_download_link(file_path, file_name):
+    with open(file_path, "rb") as file:
+        bytes = file.read()
+        b64 = base64.b64encode(bytes).decode()
+        href = f'<a href="data:file/{file_name};base64,{b64}" download="{file_name}">Télécharger {file_name}</a>'
+    return href
 
 # Fonction de téléchargement de la vidéo avec mise à jour de la barre de progression
 def telechargement(lien, path_to_download_folder, quality, format_type, include_audio, progress_bar, step, total_steps):
@@ -11,7 +22,6 @@ def telechargement(lien, path_to_download_folder, quality, format_type, include_
         video_title = url.title
         st.write(f"Téléchargement de la vidéo : {video_title}")
 
-        # Télécharger la vidéo ou l'audio
         if format_type == "MP3":
             audio_stream = url.streams.filter(only_audio=True).first()
             audio_file = audio_stream.download(output_path=path_to_download_folder)
@@ -68,6 +78,7 @@ def telechargement(lien, path_to_download_folder, quality, format_type, include_
             progress_bar.progress(step / total_steps + 1.0 / total_steps)
 
         st.success(f"Téléchargement terminé! {video_title}")
+        st.markdown(generate_download_link(output_file, os.path.basename(output_file)), unsafe_allow_html=True)
         return output_file
 
     except Exception as e:
