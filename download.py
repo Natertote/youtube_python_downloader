@@ -3,9 +3,7 @@ from pytube import YouTube, Playlist
 import os
 import subprocess
 from pathlib import Path
-import ssl
 
-ssl._create_default_https_context = ssl._create_unverified_context
 # Fonction de téléchargement de la vidéo avec mise à jour de la barre de progression
 def telechargement(lien, path_to_download_folder, quality, format_type, include_audio, progress_bar, step, total_steps):
     try:
